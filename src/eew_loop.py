@@ -1,3 +1,4 @@
+import os
 import json
 import time
 import asyncio
@@ -24,7 +25,6 @@ def start_eew_loop(loop=None):
                         f"💭 發布於：{datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')}" 
         )
         print(this_message)
-
         for each_subscribe in EEW_LIST:
             body = {
                 'to':each_subscribe,
@@ -34,11 +34,29 @@ def start_eew_loop(loop=None):
                     }]
                 }
             req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
-                
+    
+    async def send_maker(_EEW):
+        maker_id = os.environ['DEVELOP']
+        this_message = ("這是一通測試短信\n"
+                        f"{_EEW.HypoCenter} 發生規模{_EEW.Magnitude}有感地震, 最大震度{_EEW.MaxIntensity}級\n"
+                        "地震規模  : " + f" {EEW.circle_mag(_EEW.Magnitude)} 芮氏 {_EEW.Magnitude}\n"
+                        "地震深度  : " + f" {EEW.circle_depth(_EEW.Depth)} {_EEW.Depth}公里\n"
+                        "最大震度  : " + f" {EEW.circle_intensity(_EEW.MaxIntensity)} {_EEW.MaxIntensity}級\n"
+                        "震央位置  : " + f" {_EEW.HypoCenter}\n\n"
+                        f"💭 發布於：{datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')}" 
+        )
+        body = {
+                'to':maker_id,
+                'messages':[{
+                        'type': 'text',
+                        'text': this_message
+                    }]
+                }
+        requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
 
     async def loop_alert():
         print("[*] Start alert !")
-
+        await send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日\n%H:%M:%S"),"test",5.0,1.0,5,100,'5'))
         ## TESTING 
         # await send(
         #     EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日\n%H:%M:%S"),"test",5.0,1.0,5,100,'5')
