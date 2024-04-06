@@ -39,6 +39,7 @@ def start_eew_loop(loop=None):
         maker_id = os.environ['DEVELOP']
         this_message = ("這是一通測試短信\n"
                         f"{_EEW.HypoCenter} 發生規模{_EEW.Magnitude}有感地震, 最大震度{_EEW.MaxIntensity}級\n"
+                        "發生時間  : " + f" {_EEW.OriginTime}\n"
                         "地震規模  : " + f" {EEW.circle_mag(_EEW.Magnitude)} 芮氏 {_EEW.Magnitude}\n"
                         "地震深度  : " + f" {EEW.circle_depth(_EEW.Depth)} {_EEW.Depth}公里\n"
                         "最大震度  : " + f" {EEW.circle_intensity(_EEW.MaxIntensity)} {_EEW.MaxIntensity}級\n"
