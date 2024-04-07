@@ -43,8 +43,8 @@ class EEW_data:
 
     def send_threshold(self):
         if (self.get_dis()<60 ): return True
-        if (self.get_dis()<180): return self.Magnitude > 5 and self.MaxIntensity >= 4
-        else : return self.Magnitude > 6 and self.MaxIntensity >= 6
+        if (self.get_dis()<180): return self.Magnitude >= 5 or self.MaxIntensity >= 4
+        else : return self.Magnitude >= 6 or self.MaxIntensity >= 6
         return False
     
 
