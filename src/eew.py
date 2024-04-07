@@ -44,7 +44,7 @@ class EEW_data:
     def send_threshold(self):
         if (self.get_dis()<60 ): return True
         if (self.get_dis()<180): return self.Magnitude >= 5 or self.MaxIntensity >= 4
-        else : return self.Magnitude >= 6 or self.MaxIntensity >= 6
+        else : return self.Magnitude >= 6 or self.MaxIntensity >= 5
         return False
     
 
@@ -104,9 +104,7 @@ class EEW:
         if mag < 4 :
             return self.WHITE_CIRCLE
         elif mag < 5:
-            return self.GREEN_CIRCLE
-        elif mag <= 6:
-            return self.BLUE_CIRCLE
+            return self.YELLOW_CIRCLE
         else:
             return self.RED_CIRCLE
     @classmethod
@@ -115,9 +113,9 @@ class EEW:
         if intensity == 1:
             return self.WHITE_CIRCLE
         if intensity == 2:
-            return self.GREEN_CIRCLE
-        if intensity == 3:
             return self.BLUE_CIRCLE
+        if intensity == 3:
+            return self.GREEN_CIRCLE
         if intensity == 4:
             return self.YELLOW_CIRCLE
         return self.RED_CIRCLE
