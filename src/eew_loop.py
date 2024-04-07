@@ -34,7 +34,7 @@ def start_eew_loop(loop=None):
     async def send_maker(_EEW):
         maker_id = os.environ['DEVELOP']
         tasks = []
-        for each_subscribe in [maker_id,]*20:
+        for each_subscribe in [maker_id,]*2:
             this_message = _EEW.to_text()  # For testing reasons, I put it in the loop.
             body = build_body(each_subscribe, this_message)
             tasks.append(asyncio.create_task( send_single(body)))

@@ -123,8 +123,8 @@ class EEW:
                 if (len(self.proxies) == 0):
                     self.proxies = self.builder.build().get_proxies()
                     print(f"[*] New proxies num : {len(self.proxies)}")
-                    r = await self.session.get(self.URL,proxies={'http':this_proxy,'https':this_proxy})
-                    await r.html.arender()
+                r = await self.session.get(self.URL,proxies={'http':this_proxy,'https':this_proxy})
+                await r.html.arender()
 
         r.json()
         alert_json = r.json()
