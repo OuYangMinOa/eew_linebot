@@ -8,6 +8,26 @@ import asyncio
 import random
 import time
 import json
+import math
+
+def distance_to_taipei(lat, lon):
+    taipei_lat = 25.04201771824424
+    taipei_lon = 121.554219963632562
+
+    dlat = (lat - taipei_lat) * math.pi / 180
+    dlon = (lon - taipei_lon) * math.pi / 180
+
+    taipei_lat1 = taipei_lat * math.pi / 180
+    lat2        =        lat * math.pi / 180
+
+    a = math.pow(math.sin(dlat / 2), 2) + math.pow(math.sin(dlon / 2), 2) * math.cos(taipei_lat1) * math.cos(lat2)
+
+    rad = 6371
+    c   = 2 * math.asin(math.sqrt(a))
+
+    return rad * c
+
+
 
 @dataclass
 class EEW_data:
@@ -19,7 +39,17 @@ class EEW_data:
     Longitude: float
     Magnitude: float
     Depth: int
-    MaxIntensity: str
+    MaxIntensity: int
+
+    def send_threshold(self):
+        if (self.get_dis()<60 ): return True
+        if (self.get_dis()<180): return self.Magnitude > 5 and self.MaxIntensity >= 4
+        else : return self.Magnitude > 6 and self.MaxIntensity >= 6
+        return False
+    
+
+    def get_dis(self):
+        return distance_to_taipei(self.Latitude, self.Longitude)
 
     def to_text(self):
         return ("這是一通測試短信\n"
@@ -102,7 +132,7 @@ class EEW:
             json_data['Longitude'],
             json_data['Magunitude'],
             json_data['Depth'],
-            json_data['MaxIntensity'],
+            int(json_data['MaxIntensity']),
         )
 
     async def grab_result(self) -> EEW_data:
@@ -137,7 +167,7 @@ class EEW:
         while (self.state):
             time.sleep(5)
             this_eew = await self.grab_result()
-            if (this_eew.id != self.last_eew.id):
+            if (this_eew.id != self.last_eew.id and this_eew.send_threshold()):
                 yield this_eew
                 self.last_eew = this_eew
 
