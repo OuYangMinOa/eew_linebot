@@ -51,7 +51,9 @@ def handle_message(event:MessageEvent):
     source_id, user_id= get_source(event)
     print(f"[*] {source_id} {user_id} : {msg}")
     line_bot_api = MessagingApi(ApiClient(configuration))
-    if (msg == "地震"):
+    if (msg[:2] == "地震"):
+        command = msg[3:]
+
         if(source_id not in EEW_LIST):
             EEW_LIST.append(source_id)
             addtxt(EEW_LIST_FILE,source_id)

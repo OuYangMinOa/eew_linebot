@@ -10,9 +10,12 @@ import time
 import json
 import math
 
-def distance_to_taipei(lat, lon):
-    taipei_lat = 25.04201771824424
-    taipei_lon = 121.554219963632562
+
+# lat 經度
+# log 緯度 
+def distance_to_taipei(lat, lon, tar_lat = 121.554219963632562, tar_lon=25.04201771824424 ):
+    taipei_lat = tar_lat  # 125
+    taipei_lon = tar_lon  # 121
 
     dlat = (lat - taipei_lat) * math.pi / 180
     dlon = (lon - taipei_lon) * math.pi / 180
@@ -26,7 +29,6 @@ def distance_to_taipei(lat, lon):
     c   = 2 * math.asin(math.sqrt(a))
 
     return rad * c
-
 
 
 @dataclass
@@ -52,14 +54,13 @@ class EEW_data:
         return distance_to_taipei(self.Latitude, self.Longitude)
 
     def to_text(self):
-        return ("這是一通測試短信\n"
-                        f"{self.HypoCenter} 發生規模{self.Magnitude}有感地震, 最大震度{self.MaxIntensity}級\n"
-                        "發生時間  : " + f" {self.OriginTime}\n"
-                        "地震規模  : " + f" {EEW.circle_mag(self.Magnitude)} 芮氏 {self.Magnitude}\n"
-                        "地震深度  : " + f" {EEW.circle_depth(self.Depth)} {self.Depth}公里\n"
-                        "最大震度  : " + f" {EEW.circle_intensity(self.MaxIntensity)} {self.MaxIntensity}級\n"
-                        "震央位置  : " + f" {self.HypoCenter}\n\n"
-                        f"💭 發布於：{datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')}" 
+        return (f"{self.HypoCenter} 發生規模{self.Magnitude}有感地震, 最大震度{self.MaxIntensity}級\n"
+                "發生時間  : " + f" {self.OriginTime}\n"
+                "地震規模  : " + f" {EEW.circle_mag(self.Magnitude)} 芮氏 {self.Magnitude}\n"
+                "地震深度  : " + f" {EEW.circle_depth(self.Depth)} {self.Depth}公里\n"
+                "最大震度  : " + f" {EEW.circle_intensity(self.MaxIntensity)} {self.MaxIntensity}級\n"
+                "震央位置  : " + f" {self.HypoCenter}\n\n"
+                f"💭 發布於：{datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')}" 
         )
 
 
