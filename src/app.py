@@ -1,5 +1,6 @@
-from .config  import app, configuration, handler, EEW_LIST, EEW_LIST_FILE
+from .config  import app, configuration, handler, eew_list, EEW_LIST_FILE
 from .file_os import addtxt
+from .user    import Subsriber
 from flask import request, abort
 
 from linebot.v3.exceptions import (
@@ -52,18 +53,38 @@ def handle_message(event:MessageEvent):
     print(f"[*] {source_id} {user_id} : {msg}")
     line_bot_api = MessagingApi(ApiClient(configuration))
     if (msg[:2] == "地震"):
-        command = msg[3:]
 
-        if(source_id not in EEW_LIST):
-            EEW_LIST.append(source_id)
-            addtxt(EEW_LIST_FILE,source_id)
-            
-        line_bot_api.reply_message_with_http_info(
-            ReplyMessageRequest(
-                reply_token=event.reply_token,
-                messages=[TextMessage(text="好的 當有地震我會提醒你的")]
+        command = msg[2:]
+        if (command==""):
+            line_bot_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text="請輸入所在地 (輸入`全國`以接收全國的地震警報)")]
+                )
             )
-        )
+            return
+        
+        this_sub = Subsriber().from_command(user_id, command)
+    
+        addtxt(EEW_LIST_FILE, str(this_sub))
+        eew_list.append( this_sub)
+
+
+        if (this_sub.pos=="all"):
+            line_bot_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text="好的 當有地震我會提醒你的")]
+                )
+            )
+
+        else:
+            line_bot_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=f"好的 當{this_sub.pos}有可能感受到地震時，我會提醒您。\n(此預警並非百分百精準。)")]
+                )
+            )
 
             
             
