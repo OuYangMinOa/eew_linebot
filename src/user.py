@@ -2,6 +2,7 @@ from abc      import ABC, abstractmethod
 from .eew     import distance_to_taipei, EEW_data
 from .file_os import readfile
 
+import os
 
 
 class IdPos():
@@ -106,11 +107,15 @@ class Subsriber:
 class SubsribeBuilder:
     @classmethod
     def from_file(self,filename)->list:
-        subs = []
-        with open(filename, "r",encoding="utf-8") as f:
-            for line in f:
-                if (line!=""):
-                    subs.append(Subsriber().from_str(line))
-        return subs
-
+        if os.path.exists(filename):
+            subs = []
+            with open(filename, "r",encoding="utf-8") as f:
+                for line in f:
+                    if (line!=""):
+                        subs.append(Subsriber().from_str(line))
+            return subs
+        else:
+            with open(filename, "w",encoding="utf-8") as f:
+                pass
+            return subs
     
