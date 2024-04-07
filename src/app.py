@@ -50,26 +50,18 @@ def handle_message(event:MessageEvent):
     msg = event.message.text.strip().lower()
     source_id, user_id= get_source(event)
     print(f"[*] {source_id} {user_id} : {msg}")
-
+    line_bot_api = MessagingApi(ApiClient(configuration))
     if (msg == "地震"):
-        with ApiClient(configuration) as api_client:
-            line_bot_api = MessagingApi(api_client)
-            if(source_id not in EEW_LIST):
-                EEW_LIST.append(source_id)
-                addtxt(EEW_LIST_FILE,source_id)
-                line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text="好的 當有地震我會提醒你的")]
-                )
-                )
-            else:
-                line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text="好的 當有地震我會提醒你的")]
-                )
-                )
+        if(source_id not in EEW_LIST):
+            EEW_LIST.append(source_id)
+            addtxt(EEW_LIST_FILE,source_id)
+            
+        line_bot_api.reply_message_with_http_info(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text="好的 當有地震我會提醒你的")]
+            )
+        )
 
             
             

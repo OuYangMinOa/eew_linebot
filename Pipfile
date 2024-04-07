@@ -15,6 +15,7 @@ hypercorn = "*"
 werkzeug = "==2.2.2"
 websocket-client = "==1.7.0"
 pyppeteer = "==1.0.2"
+aiohttp = "*"
 
 [dev-packages]
 

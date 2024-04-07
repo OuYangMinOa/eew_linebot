@@ -6,7 +6,7 @@ from linebot.v3           import WebhookHandler
 from linebot.v3.messaging import Configuration
 
 
-PORT = 9001
+PORT = 9002
 DATA_FOLDER = "data"
 
 os.makedirs(DATA_FOLDER, exist_ok=True)
@@ -14,7 +14,7 @@ os.makedirs(DATA_FOLDER, exist_ok=True)
 EEW_LIST_FILE = f"{DATA_FOLDER}/eew_list.txt"
 EEW_LIST = readfile(EEW_LIST_FILE)
 
-
+LINE_PUSH_URL = 'https://api.line.me/v2/bot/message/push'
 
 app = Flask(__name__)
 configuration  = Configuration(access_token=os.environ['CHANNEL_ACCESS_TOKEN'])

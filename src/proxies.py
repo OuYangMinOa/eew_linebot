@@ -4,9 +4,7 @@ from threading       import Thread
 
 
 import requests
-import json
 import time
-import bs4
 import re
 
 

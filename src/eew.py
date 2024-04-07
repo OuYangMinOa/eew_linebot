@@ -1,6 +1,8 @@
 from .proxies import Proxies
 from dataclasses import dataclass
 from requests_html import AsyncHTMLSession
+from datetime import datetime
+
 import threading
 import asyncio
 import random
@@ -19,6 +21,16 @@ class EEW_data:
     Depth: int
     MaxIntensity: str
 
+    def to_text(self):
+        return ("這是一通測試短信\n"
+                        f"{self.HypoCenter} 發生規模{self.Magnitude}有感地震, 最大震度{self.MaxIntensity}級\n"
+                        "發生時間  : " + f" {self.OriginTime}\n"
+                        "地震規模  : " + f" {EEW.circle_mag(self.Magnitude)} 芮氏 {self.Magnitude}\n"
+                        "地震深度  : " + f" {EEW.circle_depth(self.Depth)} {self.Depth}公里\n"
+                        "最大震度  : " + f" {EEW.circle_intensity(self.MaxIntensity)} {self.MaxIntensity}級\n"
+                        "震央位置  : " + f" {self.HypoCenter}\n\n"
+                        f"💭 發布於：{datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')}" 
+        )
 
 
 class EEW:
@@ -83,8 +95,8 @@ class EEW:
     def json_to_eewdata(self,json_data) -> EEW_data:
         return EEW_data(
             json_data['ID'],
-            json_data['ReportTime'].replace(" ","\n"),
-            json_data['OriginTime'].replace(" ","\n"),
+            json_data['ReportTime'],
+            json_data['OriginTime'],
             json_data['HypoCenter'],
             json_data['Latitude'],
             json_data['Longitude'],
