@@ -117,5 +117,5 @@ class SubsribeBuilder:
         else:
             with open(filename, "w",encoding="utf-8") as f:
                 pass
-            return subs
+            return []
     
