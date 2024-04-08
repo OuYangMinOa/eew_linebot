@@ -5,6 +5,7 @@ import aiohttp
 import asyncio
 import threading
 
+from requests_html import AsyncHTMLSession
 from .eew     import EEW, EEW_data
 from .config  import configuration, eew_list, headers, LINE_PUSH_URL
 from datetime import datetime
@@ -49,10 +50,17 @@ def start_eew_loop(loop=None):
 
     async def loop_alert():
         print("[*] Start alert !")
-        await send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),"test",121.8,24.25,5.2,20,3))
+        await send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),"花蓮縣吉安鄉",
+                                121.59,
+                                23.92,
+                                5.6,
+                                40,
+                                4
+                                ))
 
-        async for each in eew.ssw_alert():
+        async for each in eew.alert():
             await send(each)
             print(each)
+
 
     threading.Thread(target=loop.create_task, args=(loop_alert(),)).start()

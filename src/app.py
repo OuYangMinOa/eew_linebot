@@ -83,7 +83,6 @@ def handle_message(event:MessageEvent):
                     messages=[TextMessage(text="好的 當有地震我會提醒你的")]
                 )
             )
-
         else:
             line_bot_api.reply_message_with_http_info(
                 ReplyMessageRequest(

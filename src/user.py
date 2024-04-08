@@ -81,16 +81,17 @@ class Subsriber:
 
     def threshold(self, _eew : EEW_data):
         this_dis = self.calcultae_distance(_eew.Latitude, _eew.Longitude)
+        print(self.pos, this_dis, _eew.Magnitude, _eew.MaxIntensity)
         if (self.pos == "all"):
             return True
         
         if (this_dis<60  ): 
             return True
         if (this_dis<180): 
-            return _eew.Magnitude >= 5 or _eew.MaxIntensity >= 4
+            return (_eew.Magnitude >= 5) or (_eew.MaxIntensity >= 4)
         else : 
-            return _eew.Magnitude >= 6 or _eew.MaxIntensity >= 5
-
+            return (_eew.Magnitude >= 6) or (_eew.MaxIntensity >= 5)
+        
     #  {"經度": 121.6739, "緯度": 24.91571}
     def _set_lat_lon(self):
         
