@@ -2,7 +2,9 @@ from .proxies import Proxies
 from dataclasses import dataclass
 from requests_html import AsyncHTMLSession
 from datetime import datetime
+from typing   import AsyncIterator
 
+import websockets
 import threading
 import asyncio
 import random
@@ -74,14 +76,15 @@ class EEW:
     RED_CIRCLE    = "🔴"
     YELLOW_CIRCLE = "🟡"
 
-    URL = "https://api.wolfx.jp/cwa_eew.json"  ## The taiwan earthquake url endpoint.
+    URL     = "https://api.wolfx.jp/c.json"  ## The taiwan earthquake url endpoint.
+    URL_SSW = "wss://ws-api.wolfx.jp/cwa_eew"
     def __init__(self) -> None:
-        self.session = AsyncHTMLSession()
         self.state    = True
         self.last_eew = None
         self.use_proxy = True
+        self.session = None 
 
-    def build_proxy(self):
+    def build_proxy(self) -> None:
         if (self.use_proxy):
             self.builder  = Proxies(url = self.URL)\
                                 .set_p(6)\
@@ -94,7 +97,7 @@ class EEW:
             print(f"[*] proxies num : {len(self.proxies)}")
             
     @classmethod
-    def circle_depth(self,Depth):
+    def circle_depth(self,Depth) -> str:
         if Depth > 300:
             return self.WHITE_CIRCLE
         elif Depth > 70:
@@ -104,7 +107,7 @@ class EEW:
         else:
             return self.RED_CIRCLE
     @classmethod
-    def circle_mag(self,mag):
+    def circle_mag(self,mag) -> str:
         if mag < 4 :
             return self.WHITE_CIRCLE
         elif mag < 5:
@@ -112,7 +115,7 @@ class EEW:
         else:
             return self.RED_CIRCLE
     @classmethod
-    def circle_intensity(self,intensity):
+    def circle_intensity(self,intensity) -> str:
         intensity = int(intensity)
         if intensity == 1:
             return self.WHITE_CIRCLE
@@ -126,7 +129,7 @@ class EEW:
     
     def json_to_eewdata(self,json_data) -> EEW_data:
         return EEW_data(
-            json_data['ID'],
+            str(json_data['ID']),
             json_data['ReportTime'],
             json_data['OriginTime'],
             json_data['HypoCenter'],
@@ -136,6 +139,28 @@ class EEW:
             json_data['Depth'],
             int(json_data['MaxIntensity']),
         )
+    
+    async def ssw_grab_result(self)-> AsyncIterator[EEW_data]:
+        while True:
+            try:
+                async with websockets.connect(self.URL_SSW,timeout=600) as websocket:
+                    while True:
+                        recv = await websocket.recv() 
+                        r    = json.loads(recv)
+                        # print(r)
+                        if (r["type"]!="heartbeat"):
+                            yield self.json_to_eewdata(recv)
+            except websockets.exceptions.ConnectionClosedError:
+                print("Connection closed")
+                time.sleep(10)
+                print("Reconnect")
+            
+
+    async def ssw_alert(self) -> AsyncIterator[EEW_data]:
+        async for each in self.ssw_grab_result():
+            print(each)
+            yield each
+
 
     async def grab_result(self) -> EEW_data:
         try:
@@ -144,43 +169,40 @@ class EEW:
         except Exception as e:
             print(e)
             print("[*] use proxy")
-            proxy_status = False
-            for this_proxy in self.proxies:
-                try:
-                    r = await self.session.get(self.URL,proxies={'http':this_proxy,'https':this_proxy})
-                    await r.html.arender()
-                    proxy_status = True
-                except Exception as e:
-                    print(e)
-                    print(f"{this_proxy} proxy error")
-                    self.proxies.remove(this_proxy)
-
-            ## However all proxy fails, SLEEP(10) and return the last_eew[EEW_DATA]
-            if (not proxy_status):
-                self.proxies = self.builder.build().get_proxies()
-                print(f"[*] New proxies num : {len(self.proxies)}")
-                time.sleep(10)
-                return self.last_eew
-                
+            this_proxy = random.choice(self.proxies)
+            try:
+                r = await self.session.get(self.URL,proxies={'http':this_proxy,'https':this_proxy})
+                await r.html.arender()
+            except Exception as e:
+                print(e)
+                print(f"{this_proxy} proxy error")
+                self.proxies.remove(this_proxy)
+                if (len(self.proxies) == 0):
+                    self.proxies = self.builder.build().get_proxies()
+                    print(f"[*] New proxies num : {len(self.proxies)}")
+                r = await self.session.get(self.URL,proxies={'http':this_proxy,'https':this_proxy})
+                await r.html.arender()
 
         r.json()
         alert_json = r.json()
         return self.json_to_eewdata(alert_json)
     
 
-    async def alert(self):
+    async def alert(self) -> AsyncIterator[EEW_data]:
+        self.session = AsyncHTMLSession()
         if self.last_eew is None:
-            self.last_eew = await self.grab_result()
+            self.last_eew = await self.grab_result() 
         while (self.state):
             time.sleep(5)
             this_eew = await self.grab_result()
-            if (this_eew.id != self.last_eew.id and this_eew.send_threshold()):
+            if (this_eew.id != self.last_eew.id):
                 yield this_eew
                 self.last_eew = this_eew
 
-    async def close(self):
+    async def close(self) -> None:
         self.state = False
-        await self.session.close()
+        if (self.session is not None):
+            await self.session.close()
 
 
 async def test():

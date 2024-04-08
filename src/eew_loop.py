@@ -15,7 +15,7 @@ def build_body(to, msg):
 
 def start_eew_loop(loop=None):
     eew = EEW()
-    eew.build_proxy()
+    # eew.build_proxy()
     time.sleep(5)
     
     async def send_single(body):
@@ -49,10 +49,9 @@ def start_eew_loop(loop=None):
 
     async def loop_alert():
         print("[*] Start alert !")
-
         await send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),"test",121.8,24.25,5.2,20,3))
-    
-        async for each in eew.alert():
+
+        async for each in eew.ssw_alert():
             await send(each)
             print(each)
 
