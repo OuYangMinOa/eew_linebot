@@ -43,6 +43,9 @@ class EEW_data:
     Depth: int
     MaxIntensity: int
 
+    def __eq__(self, value: object) -> bool:
+        return self.id == value.id
+
     def send_threshold(self):
         if (self.get_dis()<60 ): return True
         if (self.get_dis()<180): return self.Magnitude >= 5 or self.MaxIntensity >= 4

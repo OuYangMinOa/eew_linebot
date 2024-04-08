@@ -1,7 +1,8 @@
 from .config  import app, configuration, handler, eew_list, EEW_LIST_FILE
 from .file_os import addtxt
-from .user    import Subsriber
+from .user    import Subsriber, SubsribeController
 from flask import request, abort
+
 
 from linebot.v3.exceptions import (
     InvalidSignatureError
@@ -65,9 +66,14 @@ def handle_message(event:MessageEvent):
             return
         
         this_sub = Subsriber().from_command(user_id, command)
-    
-        addtxt(EEW_LIST_FILE, str(this_sub))
-        eew_list.append( this_sub)
+
+        check_result = SubsribeController.check_contains(this_sub,eew_list)
+        if (check_result[1]):
+            eew_list[check_result[0]].from_command(user_id, command)
+            SubsribeController.to_file(EEW_LIST_FILE, eew_list)
+        else:
+            addtxt(EEW_LIST_FILE, str(this_sub))
+            eew_list.append( this_sub)
 
 
         if (this_sub.pos=="all"):
@@ -85,6 +91,3 @@ def handle_message(event:MessageEvent):
                     messages=[TextMessage(text=f"好的 當{this_sub.pos}有可能感受到地震時，我會提醒您。\n(此預警並非百分百精準。)")]
                 )
             )
-
-            
-            

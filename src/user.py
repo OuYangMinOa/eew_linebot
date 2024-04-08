@@ -103,6 +103,13 @@ class Subsriber:
     def __repr__(self) -> str:
         return f"{self.id}_{self.pos}"
 
+    def check_contains(self,_list)->tuple[int, bool]:
+        for num,each in enumerate(_list):
+            if (self.id == each.id):
+                return num ,True
+            
+        return -1,False
+            
 
 class SubsribeController:
     @classmethod
@@ -118,4 +125,18 @@ class SubsribeController:
             with open(filename, "w",encoding="utf-8") as f:
                 pass
             return []
+        
+    @classmethod
+    def to_file(self, filename, subs)->None:
+        with open(filename, "w", encoding="utf-8") as f:
+            for each in subs:
+                f.write(f"{each}\n")
+        
+
+    @classmethod
+    def check_contains(self, _sub_tar,_sub_list)->tuple[int, bool]:
+        for num,each in enumerate(_sub_list):
+            if (_sub_tar.id == each.id):
+                return num ,True
+        return -1,False
     
