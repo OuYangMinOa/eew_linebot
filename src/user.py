@@ -104,7 +104,7 @@ class Subsriber:
         return f"{self.id}_{self.pos}"
 
 
-class SubsribeBuilder:
+class SubsribeController:
     @classmethod
     def from_file(self,filename)->list:
         if os.path.exists(filename):
