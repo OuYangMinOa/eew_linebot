@@ -141,19 +141,24 @@ class EEW:
         except Exception as e:
             print(e)
             print("[*] use proxy")
-            this_proxy = random.choice(self.proxies)
-            try:
-                r = await self.session.get(self.URL,proxies={'http':this_proxy,'https':this_proxy})
-                await r.html.arender()
-            except Exception as e:
-                print(e)
-                print(f"{this_proxy} proxy error")
-                self.proxies.remove(this_proxy)
-                if (len(self.proxies) == 0):
-                    self.proxies = self.builder.build().get_proxies()
-                    print(f"[*] New proxies num : {len(self.proxies)}")
-                r = await self.session.get(self.URL,proxies={'http':this_proxy,'https':this_proxy})
-                await r.html.arender()
+            proxy_status = False
+            for this_proxy in self.proxies:
+                try:
+                    r = await self.session.get(self.URL,proxies={'http':this_proxy,'https':this_proxy})
+                    await r.html.arender()
+                    proxy_status = True
+                except Exception as e:
+                    print(e)
+                    print(f"{this_proxy} proxy error")
+                    self.proxies.remove(this_proxy)
+
+            ## However all proxy fails, SLEEP(10) and return the last_eew[EEW_DATA]
+            if (not proxy_status):
+                self.proxies = self.builder.build().get_proxies()
+                print(f"[*] New proxies num : {len(self.proxies)}")
+                time.sleep(10)
+                return self.last_eew
+                
 
         r.json()
         alert_json = r.json()
