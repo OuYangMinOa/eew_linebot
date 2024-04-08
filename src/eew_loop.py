@@ -58,7 +58,7 @@ def start_eew_loop(loop=None):
                                 4
                                 ))
 
-        async for each in eew.alert():
+        async for each in eew.ssw_alert():
             await send(each)
             print(each)
 
