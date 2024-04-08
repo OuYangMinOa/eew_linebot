@@ -14,8 +14,9 @@ os.makedirs(DATA_FOLDER, exist_ok=True)
 
 EEW_LIST_FILE = f"{DATA_FOLDER}/eew_listv2.txt"
 
-eew_list = SubsribeBuilder.from_file(EEW_LIST_FILE)  # readfile(EEW_LIST_FILE)
+eew_list = SubsribeController.from_file(EEW_LIST_FILE)  # readfile(EEW_LIST_FILE)
 print(eew_list)
+
 LINE_PUSH_URL = 'https://api.line.me/v2/bot/message/push'
 
 app = Flask(__name__)
