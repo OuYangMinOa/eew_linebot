@@ -30,8 +30,8 @@ def start_eew_loop(loop=None):
         this_message = _EEW.to_text()
         tasks = []
         for each_subscribe in eew_list:
-            body = build_body(each_subscribe.id, this_message)
             if (each_subscribe.threshold(_EEW)):
+                body = build_body(each_subscribe.id, this_message)
                 tasks.append(asyncio.create_task( send_single(body)))
         await asyncio.gather(*tasks)
     
@@ -41,8 +41,8 @@ def start_eew_loop(loop=None):
         tasks = []
         for each_subscribe in [maker_sub,]*2:
             this_message = _EEW.to_text()  # For testing reasons, I put it in the loop.
-            body = build_body(each_subscribe.id, this_message)
             if (each_subscribe.threshold(_EEW)):
+                body = build_body(each_subscribe.id, this_message)
                 tasks.append(asyncio.create_task( send_single(body)))
         await asyncio.gather(*tasks)
         # requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
@@ -50,9 +50,10 @@ def start_eew_loop(loop=None):
     async def loop_alert():
         print("[*] Start alert !")
 
-        await send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),"test",5.0,1.0,5,100,5))
-
+        await send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),"test",121.8,24.25,5.2,20,3))
+    
         async for each in eew.alert():
             await send(each)
+            print(each)
 
     threading.Thread(target=loop.create_task, args=(loop_alert(),)).start()
