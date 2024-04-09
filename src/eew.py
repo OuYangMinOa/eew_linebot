@@ -151,7 +151,7 @@ class EEW:
                         r    = json.loads(recv)
                         # print(r)
                         if (r["type"]!="heartbeat"):
-                            yield self.json_to_eewdata(recv)
+                            yield self.json_to_eewdata(r)
             except websockets.exceptions.ConnectionClosedError:
                 print("Connection closed")
                 time.sleep(10)
