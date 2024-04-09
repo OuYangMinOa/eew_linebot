@@ -69,7 +69,8 @@ def handle_message(event:MessageEvent):
 
         check_result = SubsribeController.check_contains(this_sub,eew_list)
         if (check_result[1]):
-            eew_list[check_result[0]].from_command(user_id, command)
+            this_index = check_result[0]
+            eew_list[this_index] = this_sub
             SubsribeController.to_file(EEW_LIST_FILE, eew_list)
         else:
             addtxt(EEW_LIST_FILE, str(this_sub))
