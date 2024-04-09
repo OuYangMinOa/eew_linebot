@@ -80,6 +80,8 @@ class Subsriber:
         return distance_to_taipei(lat,lon,self.lat,self.lon)
 
     def threshold(self, _eew : EEW_data):
+        if (self.pos == "all"):
+            return True
         this_dis = self.calcultae_distance(_eew.Latitude, _eew.Longitude)
         print(self.pos, this_dis, _eew.Magnitude, _eew.MaxIntensity)
         if (self.pos == "all"):
@@ -91,12 +93,11 @@ class Subsriber:
             return (_eew.Magnitude >= 5) or (_eew.MaxIntensity >= 4)
         else : 
             return (_eew.Magnitude >= 6) or (_eew.MaxIntensity >= 5)
-        
+
     #  {"經度": 121.6739, "緯度": 24.91571}
     def _set_lat_lon(self):
-        
-        self.lat = self.locations[self.pos]["經度"]
-        self.lon = self.locations[self.pos]["緯度"]
+        self.lat = self.locations[self.pos]["緯度"]
+        self.lon = self.locations[self.pos]["經度"]
 
     def __str__(self) -> str:
         return f"{self.id}_{self.pos}"

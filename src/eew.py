@@ -131,7 +131,7 @@ class EEW:
     
     def json_to_eewdata(self,json_data) -> EEW_data:
         return EEW_data(
-            str(json_data['ID']),
+            json_data['ID'],
             json_data['ReportTime'],
             json_data['OriginTime'],
             json_data['HypoCenter'],
