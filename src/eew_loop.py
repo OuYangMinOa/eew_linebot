@@ -14,7 +14,7 @@ from .user    import Subsriber
 def build_body(to, msg):
     return {'to':to,'messages':[{'type': 'text','text': msg }]}
 
-class EEW_loop:
+class EEWLoop:
     def __init__(self,loop) -> None:
         self.loop = loop
         self.EEW  = EEW()
@@ -25,6 +25,14 @@ class EEW_loop:
 
     def start_alert_jp(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("jp"),)).start()
+        return self
+    
+    def start_alert_fj(self):
+        threading.Thread(target=self.loop.create_task, args=(self.loop_alert("fj"),)).start()  
+        return self
+    
+    def start_alert_sc(self):
+        threading.Thread(target=self.loop.create_task, args=(self.loop_alert("sc"),)).start()
         return self
 
     async def loop_alert(self,pos="tw"):

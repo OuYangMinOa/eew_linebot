@@ -8,7 +8,7 @@ from src.app           import app
 from hypercorn.asyncio import serve
 from hypercorn.config  import Config
 
-from src.eew_loop      import EEW_loop, start_eew_loop
+from src.eew_loop      import EEWLoop
 
 async def START_SERVICES():
     config = Config()
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     asyncio.set_event_loop(loop)
 
     # # Start the earthquake early warning service in a thread
-    EEW_loop(loop).start_alert_tw()  #  .start_alert_jp()
+    EEWLoop(loop).start_alert_tw()  #  .start_alert_jp()
 
     # Start the web server
     loop.run_until_complete(START_SERVICES())
