@@ -142,10 +142,11 @@ class EEW:
             int(json_data['MaxIntensity']),
         )
     
-    async def ssw_grab_result(self)-> AsyncIterator[EEW_data]:
+    async def wss_grab_result(self)-> AsyncIterator[EEW_data]:
         while True:
             try:
                 async with websockets.connect(self.URL_SSW,timeout=600) as websocket:
+                    print("[*] Connected to wss server ! ")
                     while True:
                         recv = await websocket.recv() 
                         r    = json.loads(recv)
@@ -155,11 +156,11 @@ class EEW:
             except websockets.exceptions.ConnectionClosedError:
                 print("Connection closed")
                 time.sleep(10)
-                print("Reconnect")
+                print("Reconnect ...")
             
 
-    async def ssw_alert(self) -> AsyncIterator[EEW_data]:
-        async for each in self.ssw_grab_result():
+    async def wss_alert(self) -> AsyncIterator[EEW_data]:
+        async for each in self.swss_grab_result():
             print(each)
             yield each
 

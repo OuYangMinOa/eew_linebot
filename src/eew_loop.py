@@ -41,7 +41,7 @@ def start_eew_loop(loop=None):
         maker_sub = Subsriber().from_command(os.environ['DEVELOP'],"台北")
         tasks = []
         for each_subscribe in [maker_sub,]*2:
-            this_message = _EEW.to_text()  # For testing reasons, I put it in the loop.
+            this_message = _EEW.to_text()  # For testing reasons (grab the time), I put it in the loop.
             if (each_subscribe.threshold(_EEW)):
                 body = build_body(each_subscribe.id, this_message)
                 tasks.append(asyncio.create_task( send_single(body)))
@@ -58,7 +58,7 @@ def start_eew_loop(loop=None):
                                 4
                                 ))
 
-        async for each in eew.ssw_alert():
+        async for each in eew.wss_alert():
             await send(each)
             print(each)
 
