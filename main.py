@@ -8,7 +8,7 @@ from src.app           import app
 from hypercorn.asyncio import serve
 from hypercorn.config  import Config
 
-from src.eew_loop      import start_eew_loop
+from src.eew_loop      import EEW_loop, start_eew_loop
 
 async def START_SERVICES():
     config = Config()
@@ -21,14 +21,14 @@ async def START_SERVICES():
 
 if __name__ == "__main__":
     # # Start the ngrok service
-    listener = ngrok.forward(PORT,authtoken_from_env=True)
-    print(f"[*] Url : {listener.url()}")
+    # listener = ngrok.forward(PORT,authtoken_from_env=True)
+    # print(f"[*] Url : {listener.url()}")
 
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
-    # # Start the eew service in a thread
-    start_eew_loop(loop)
+    # # Start the earthquake early warning service in a thread
+    EEW_loop(loop).start_alert_tw()  #  .start_alert_jp()
 
     # Start the web server
     loop.run_until_complete(START_SERVICES())

@@ -85,6 +85,14 @@ class EEW:
         self.use_proxy = True
         self.proxies = []
         self.session = None 
+        self.pos_url_wss_dict = {
+            "tw": "wss://ws-api.wolfx.jp/cwa_eew",
+            "jp": "wss://ws-api.wolfx.jp/jma_eew",
+            "fj": "wss://ws-api.wolfx.jp/fj_eew", # 福建
+            "sc": "wss://ws-api.wolfx.jp/sc_eew", # 四川
+        }
+
+
 
     def build_proxy(self) -> None:
         if (self.use_proxy):
@@ -142,26 +150,29 @@ class EEW:
             int(json_data['MaxIntensity']),
         )
     
-    async def wss_grab_result(self)-> AsyncIterator[EEW_data]:
+    def _get_url_by_pos(self,pos="tw"):
+        if (pos in self.pos_url_wss_dict):
+            return self.pos_url_wss_dict[pos]
+        return self.pos_url_wss_dict["tw"]
+    
+    async def wss_grab_result(self,pos="tw")-> AsyncIterator[EEW_data]:
         while True:
             try:
-                async with websockets.connect(self.URL_SSW,timeout=600) as websocket:
-                    print("[*] Connected to wss server ! ")
+                async with websockets.connect(self._get_url_by_pos(pos),timeout=600) as websocket:
                     while True:
                         recv = await websocket.recv() 
                         r    = json.loads(recv)
-                        # print(r)
                         if (r["type"]!="heartbeat"):
                             yield self.json_to_eewdata(r)
-            except websockets.exceptions.ConnectionClosedError:
-                print("Connection closed")
+            except Exception as e:
+                print(f"Connection closed {e}")
                 time.sleep(10)
-                print("Reconnect ...")
+                print("Reconnect")
             
 
-    async def wss_alert(self) -> AsyncIterator[EEW_data]:
-        async for each in self.swss_grab_result():
-            print(each)
+    async def wss_alert(self,pos="tw") -> AsyncIterator[EEW_data]:
+        async for each in self.wss_grab_result(pos):
+            print(pos,each)
             yield each
 
 
