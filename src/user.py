@@ -96,8 +96,8 @@ class Subsriber:
 
     #  {"經度": 121.6739, "緯度": 24.91571}
     def _set_lat_lon(self):
-        self.lat = self.locations[self.pos]["緯度"]
-        self.lon = self.locations[self.pos]["經度"]
+        self.lat = self.locations[self.pos]["經度"]
+        self.lon = self.locations[self.pos]["緯度"]
 
     def __str__(self) -> str:
         return f"{self.id}_{self.pos}"
