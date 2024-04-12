@@ -137,18 +137,43 @@ class EEW:
             return self.YELLOW_CIRCLE
         return self.RED_CIRCLE
     
-    def json_to_eewdata(self,json_data) -> EEW_data:
-        return EEW_data(
-            json_data['ID'],
-            json_data['ReportTime'],
-            json_data['OriginTime'],
-            json_data['HypoCenter'],
-            json_data['Latitude'],
-            json_data['Longitude'],
-            json_data['Magunitude'],
-            json_data['Depth'],
-            int(json_data['MaxIntensity']),
-        )
+    def json_to_eewdata(self,json_data,pos) -> EEW_data:
+        if (pos == "jp"):        
+            return EEW_data(
+                json_data['EventID'],
+                json_data['AnnouncedTime'].replace(" ","\n"),
+                json_data['OriginTime'].replace(" ","\n"),
+                json_data['HypoCenter'],
+                json_data['Latitude'],
+                json_data['Longitude'],
+                json_data['Magunitude'],
+                json_data['Depth'],
+                json_data['MaxIntensity'],
+            )
+        elif (pos == "fj"):
+            return EEW_data(
+                json_data['EventID'],
+                json_data['ReportTime'].replace(" ","\n"),
+                json_data['OriginTime'].replace(" ","\n"),
+                json_data['HypoCenter'],
+                json_data['Latitude'],
+                json_data['Longitude'],
+                json_data['Magunitude'],
+                json_data['Depth'],
+                json_data['MaxIntensity'],
+            )
+        else:
+            return EEW_data(
+                json_data['ID'],
+                json_data['ReportTime'].replace(" ","\n"),
+                json_data['OriginTime'].replace(" ","\n"),
+                json_data['HypoCenter'],
+                json_data['Latitude'],
+                json_data['Longitude'],
+                json_data['Magunitude'],
+                json_data['Depth'],
+                json_data['MaxIntensity'],
+            )
     
     def _get_url_by_pos(self,pos="tw"):
         if (pos in self.pos_url_wss_dict):
@@ -164,7 +189,7 @@ class EEW:
                         recv = await websocket.recv() 
                         r    = json.loads(recv)
                         if (r["type"]!="heartbeat"):
-                            yield self.json_to_eewdata(r)
+                            yield self.json_to_eewdata(r,pos)
             except Exception as e:
                 print(f"Connection closed : {e}")
                 time.sleep(10)
