@@ -126,6 +126,8 @@ class EEW:
             return self.RED_CIRCLE
     @classmethod
     def circle_intensity(self,intensity) -> str:
+        if (intensity is None ):
+            return self.WHITE_CIRCLE
         intensity = int(intensity)
         if intensity == 1:
             return self.WHITE_CIRCLE
@@ -143,7 +145,7 @@ class EEW:
                 json_data['EventID'],
                 json_data['AnnouncedTime'].replace(" ","\n"),
                 json_data['OriginTime'].replace(" ","\n"),
-                json_data['HypoCenter'],
+                json_data['Hypocenter'],
                 json_data['Latitude'],
                 json_data['Longitude'],
                 json_data['Magunitude'],
@@ -159,8 +161,8 @@ class EEW:
                 json_data['Latitude'],
                 json_data['Longitude'],
                 json_data['Magunitude'],
-                json_data['Depth'],
-                json_data['MaxIntensity'],
+                None,
+                None,
             )
         else:
             return EEW_data(
