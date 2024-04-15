@@ -28,7 +28,12 @@ if __name__ == "__main__":
     asyncio.set_event_loop(loop)
 
     # # Start the earthquake early warning service in a thread
-    EEWLoop(loop).start_alert_tw()  #  .start_alert_jp()
+    EEWLoop(loop)\
+        .start_alert_tw()\
+        .start_alert_jp()\
+        .start_alert_sc()\
+        .start_alert_fj()\
+        
 
     # Start the web server
     loop.run_until_complete(START_SERVICES())

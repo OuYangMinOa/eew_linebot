@@ -7,9 +7,9 @@ import threading
 
 from requests_html import AsyncHTMLSession
 from .eew     import EEW, EEW_data
-from .config  import configuration, eew_list, headers, LINE_PUSH_URL
+from .config  import configuration, headers, LINE_PUSH_URL, eew_dict
 from datetime import datetime
-from .user    import Subsriber
+from .user    import Subsriber, SubsribeController
 
 def build_body(to, msg):
     return {'to':to,'messages':[{'type': 'text','text': msg }]}
@@ -37,15 +37,18 @@ class EEWLoop:
 
     async def loop_alert(self,pos="tw"):
         print(f"[*] Start alert {pos} !")
-        await self.send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),"花蓮縣吉安鄉",121.59,23.92,5.6,40,4))
+        await self.send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),pos,121.59,23.92,5.6,40,4),pos)
         async for each in self.EEW.wss_alert(pos):
-            await self.send(each)
-            print(each)
+            await self.send(each, pos)
+            print(pos,each)
 
-    async def send(self, _EEW:EEW_data):   #  eew_list : list[Subsriber]
+    async def send(self, _EEW:EEW_data, pos):   #  eew_list : list[Subsriber]
         this_message = _EEW.to_text()
         tasks = []
-        for each_subscribe in eew_list:
+        for each_id in eew_dict:
+            each_subscribe = eew_dict[each_id]
+            if (pos not in each_subscribe.country):
+                continue
             if (each_subscribe.threshold(_EEW)):
                 body = build_body(each_subscribe.id, this_message)
                 tasks.append(asyncio.create_task( self.send_single(body)))
@@ -57,11 +60,14 @@ class EEWLoop:
             async with session.post(LINE_PUSH_URL, headers=headers, data=json.dumps(body).encode('utf-8')) as response:
                 pass
 
+    async def send_maker(self, _EEW, pos="tw"):
+        maker_sub : Subsriber = SubsribeController.handle_commamd(os.environ['DEVELOP'],"台灣 台北")
+        maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"jp")
 
-    async def send_maker(self, _EEW):
-        maker_sub = Subsriber().from_command(os.environ['DEVELOP'],"台北")
         tasks = []
-        for each_subscribe in [maker_sub,]*2:
+        for each_subscribe in [maker_sub,]:
+            if (pos not in each_subscribe.country):
+                continue
             this_message = _EEW.to_text()  # For testing reasons (grab the time), I put it in the loop.
             if (each_subscribe.threshold(_EEW)):
                 body = build_body(each_subscribe.id, this_message)

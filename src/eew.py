@@ -186,16 +186,16 @@ class EEW:
         while True:
             try:
                 async with websockets.connect(self._get_url_by_pos(pos),timeout=600) as websocket:
-                    print("Connected !")
+                    print(f"{pos} Connected !")
                     while True:
                         recv = await websocket.recv() 
                         r    = json.loads(recv)
                         if (r["type"]!="heartbeat"):
                             yield self.json_to_eewdata(r,pos)
             except Exception as e:
-                print(f"Connection closed : {e}")
+                print(f"{pos} Connection closed : {e}")
                 time.sleep(10)
-                print("Reconnect")
+                print(f"{pos} Reconnect")
             
 
     async def wss_alert(self,pos="tw") -> AsyncIterator[EEW_data]:
