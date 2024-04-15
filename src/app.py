@@ -1,4 +1,4 @@
-from .config  import app, configuration, handler, eew_list, EEW_LIST_FILE
+from .config  import app, configuration, handler, eew_dict, EEW_LIST_FILE
 from .file_os import addtxt
 from .user    import Subsriber, SubsribeController
 from flask import request, abort
@@ -53,41 +53,64 @@ def handle_message(event:MessageEvent):
     source_id, user_id= get_source(event)
     print(f"[*] {source_id} {user_id} : {msg}")
     line_bot_api = MessagingApi(ApiClient(configuration))
-    if (msg[:2] == "地震"):
 
+    if (msg == "help" or msg == "幫助" or msg == "小俠" or msg == "歐陽小俠" ):
+        line_bot_api.reply_message_with_http_info(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text=
+                    ("目前只支援地震通知功能\n"
+                    "若想要其他的功能請聯絡歐陽\n"
+                    "請輸入國家跟所在地\n"
+                    "(地震 國家 台灣縣市)。 \n"
+                    "ex:\n\t1. 地震 台灣 台北\n\t2. 地震 日本\n"
+                    "目前國家支援 (日本 台灣 四川 福建)\n所在地支援台灣所有縣市")
+                )]
+            )
+        )
+
+    if (msg[:2] == "地震"):
         command = msg[2:]
+        # No country
         if (command==""):
             line_bot_api.reply_message_with_http_info(
                 ReplyMessageRequest(
                     reply_token=event.reply_token,
-                    messages=[TextMessage(text="請輸入所在地 (輸入`全國`以接收全國的地震警報)")]
+                    messages=[TextMessage(text=("請輸入國家跟所在地\n"
+                                                "(地震 國家 台灣縣市)。 \n"
+                                                "ex:\n\t1. 地震 台灣 台北\n\t2. 地震 日本\n"
+                                                "目前國家支援 (日本 台灣 四川 福建)\n所在地支援台灣所有縣市"
+                                                )
+                                                )]
                 )
             )
             return
         
-        this_sub = Subsriber().from_command(user_id, command)
+        this_sub = SubsribeController.handle_commamd(user_id, command)
 
-        check_result = SubsribeController.check_contains(this_sub,eew_list)
-        if (check_result[1]):
-            this_index = check_result[0]
-            eew_list[this_index] = this_sub
-            SubsribeController.to_file(EEW_LIST_FILE, eew_list)
+        if (user_id in eew_dict):
+            if (this_sub.last_cmd is not None):
+                eew_dict[user_id].from_command(*this_sub.last_cmd)
+            SubsribeController.to_file(EEW_LIST_FILE, eew_dict)
         else:
+            eew_dict[user_id] = this_sub
             addtxt(EEW_LIST_FILE, str(this_sub))
-            eew_list.append( this_sub)
+
+        print(eew_dict)
+
+        # check_result = SubsribeController.check_contains(this_sub,eew_list)
+        # if (check_result[1]):
+        #     this_index = check_result[0]
+        #     eew_list[this_index] = this_sub
+        #     SubsribeController.to_file(EEW_LIST_FILE, eew_list)
+        # else:
+        #     addtxt(EEW_LIST_FILE, str(this_sub))
+        #     eew_list.append( this_sub)
 
 
-        if (this_sub.pos=="all"):
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text="好的 當有地震我會提醒你的")]
-                )
+        line_bot_api.reply_message_with_http_info(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text=f"{eew_dict[user_id].get_notify()}")]
             )
-        else:
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text=f"好的 當{this_sub.pos}有可能感受到地震時，我會提醒您。\n(此預警並非百分百精準。)")]
-                )
-            )
+        )

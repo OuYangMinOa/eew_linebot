@@ -8,14 +8,18 @@ from .user                import SubsribeController
 
 
 PORT = 9006
-DATA_FOLDER = "data"
+DATA_FOLDER = SubsribeController.DATA_FOLDER
 
 os.makedirs(DATA_FOLDER, exist_ok=True)
 
-EEW_LIST_FILE = f"{DATA_FOLDER}/eew_listv2.txt"
+EEW_LIST_FILE = f"{DATA_FOLDER}/eew_listv3.txt"
 
-eew_list = SubsribeController.from_file(EEW_LIST_FILE)  # readfile(EEW_LIST_FILE)
-print(eew_list)
+# eew_list = SubsribeController.from_file(EEW_LIST_FILE)  # readfile(EEW_LIST_FILE)
+eew_dict = SubsribeController.from_file(EEW_LIST_FILE) 
+print(eew_dict)
+
+
+
 
 LINE_PUSH_URL = 'https://api.line.me/v2/bot/message/push'
 
