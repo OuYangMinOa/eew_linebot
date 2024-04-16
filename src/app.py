@@ -79,14 +79,31 @@ def handle_message(event:MessageEvent):
                     messages=[TextMessage(text=("請輸入國家跟所在地\n"
                                                 "(地震 國家 台灣縣市)。 \n"
                                                 "ex:\n\t1. 地震 台灣 台北\n\t2. 地震 日本\n"
-                                                "目前國家支援 (日本 台灣 四川 福建)\n所在地支援台灣所有縣市"
-                                                )
-                                                )]
+                                                "目前國家支援 (日本 台灣 四川 福建)\n"
+                                                "所在地支援台灣所有縣市\n"
+                                                "(若要監控全國 請輸入`all`)"
+                                                ))]
                 )
             )
             return
         
         this_sub = SubsribeController.handle_commamd(user_id, command)
+
+        if (this_sub is None):
+            line_bot_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=("請輸入國家跟所在地\n"
+                                                "(地震 國家 台灣縣市)。 \n"
+                                                "ex:\n\t1. 地震 台灣 台北\n\t2. 地震 日本\n"
+                                                "目前國家支援 (日本 台灣 四川 福建)\n"
+                                                "所在地支援台灣所有縣市\n"
+                                                "(若要監控全國 請輸入`all`)"
+                                                ))]
+                )
+            )
+            return
+
 
         if (user_id in eew_dict):
             if (this_sub.last_cmd is not None):
@@ -96,7 +113,6 @@ def handle_message(event:MessageEvent):
             eew_dict[user_id] = this_sub
             addtxt(EEW_LIST_FILE, str(this_sub))
 
-        print(eew_dict)
 
         # check_result = SubsribeController.check_contains(this_sub,eew_list)
         # if (check_result[1]):
