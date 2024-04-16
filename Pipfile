@@ -18,6 +18,7 @@ pyppeteer = "==1.0.2"
 aiohttp = "*"
 websocket = "*"
 websockets = "*"
+opencc-python-reimplemented = "*"
 
 [dev-packages]
 

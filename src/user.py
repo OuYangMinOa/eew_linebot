@@ -141,6 +141,9 @@ class Subsriber:
         if pos != "tw" or self.pos is None:
             return True
         
+        if (_eew.MaxIntensity is None or _eew.Magnitude is None or _eew.Depth is None):
+            return True
+
         if (self.pos == "all"):
             return True
         this_dis = self.calcultae_distance(_eew.Latitude, _eew.Longitude)
