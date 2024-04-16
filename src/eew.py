@@ -121,6 +121,8 @@ class EEW:
             return self.RED_CIRCLE
     @classmethod
     def circle_mag(self,mag) -> str:
+        if (mag in None):
+            return self.WHITE_CIRCLE
         if mag < 4 :
             return self.WHITE_CIRCLE
         elif mag < 5:
