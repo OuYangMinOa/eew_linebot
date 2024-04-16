@@ -9,22 +9,22 @@ import os
 class IdPos(): 
     """Stradegy for tw
     """
-    POS_LIST = ['基隆市','臺北市','新北市','桃園市','新竹市','臺中市','臺南市','高雄市','宜蘭縣','新竹縣','苗栗縣','彰化縣','南投縣','雲林縣','嘉義縣','屏東縣','台東縣','花蓮縣','澎湖縣','基隆縣','金門縣','連江縣',]
+    POS_LIST = ['基隆市','臺北市','新北市','桃園市','新竹市','臺中市','臺南市','高雄市','宜蘭縣','新竹縣','苗栗縣','彰化縣','南投縣','雲林縣','嘉義縣','屏東縣','臺東縣','花蓮縣','澎湖縣','基隆縣','金門縣','連江縣',]
     @classmethod
     def correct_pos(self, pos):
         if (pos is None):
             return None
 
         pos = pos.strip()
-        if (pos.lower() == "all" or pos=="全國"):
+        if (pos.lower() == "all" or pos=="全國" or pos == ""):
             return "all"
         if '台' in pos:
             pos = pos.replace('台','臺')
 
         for each in self.POS_LIST:
-            if pos in each:   
+            if pos in each or each in pos:   
                 return each
-        return 'all'
+        return None
             
     @classmethod
     def from_str(self,line_text):
@@ -88,6 +88,15 @@ class Subsriber:
     def get_notify(self) -> str:
         return self.notify # 
 
+    def get_country_str(self):
+        output = ""
+        for c in self.country:
+            output = output + self.country_word_dict[c] 
+            if (c == "tw" and self.pos is not None):
+                output = output + "-" + self.pos
+            output = output + ", "
+        return output
+
     def from_str(self, text, method = IdPos): 
         req = method.from_str(text)
         print(req)
@@ -104,23 +113,23 @@ class Subsriber:
         
     def from_command(self,id, country, pos = None, method = IdPos):
         self.id  = id
-        temp_pos = IdPos.correct_pos(pos)
+        temp_pos = method.correct_pos(pos)
         
         self.last_cmd = [id, country, pos]
         if (country not in self.country): # Add country to self.country
             self.country.append(country)
-            this_country_str = ",".join([self.country_word_dict[c] for c in self.country])
-            self.notify = f"好的 當[{this_country_str}]發生地震時，我會提醒您。\n(此預警並非百分百精準。)"
+            this_country_str = self.get_country_str()
+            self.notify = f"好的 ! \n[{this_country_str}]\n發生地震時，我會提醒您。\n(此預警並非百分百精準。)"
         elif (country in self.country):
             if (country != "tw"): # remove country from self.country
                 self.country.remove(country)
                 self.notify = f"將不再監測 {self.country_word_dict[country]}"
             elif (country == "tw" and temp_pos == self.pos):  # if country is "tw" and command's pos is same as self.pos, remove country from self.country
                 self.country.remove(country)
-                self.notify = f"將不再監測 {self.country_word_dict[country]}"
+                self.notify = f"將不再監測 {self.country_word_dict[country]} -> {temp_pos}"
             else:  # country is "tw" and pos id note diff self.pos
+                self.notify = f"好的將改變你在台灣的所在地。\n{self.pos} -> {temp_pos}"
                 self.pos = temp_pos
-                self.notify = f"好的將改變你在台灣的所在地。"
 
         return self
 
@@ -206,10 +215,10 @@ class SubsribeController:
     
 
     @classmethod
-    def handle_commamd(self, id:str, command:str) -> Subsriber:
+    def handle_commamd(self, id:str, command:str, method=IdPos) -> Subsriber:
         command = command.strip()
         if (command.startswith("臺灣") or command.startswith("台灣")):
-            return Subsriber().from_command(id,'tw',command[2:])
+            return Subsriber().from_command(id,'tw',command[2:],method=method)
         
         if (command.startswith("日本")):
             return Subsriber().from_command(id,"jp")
@@ -219,3 +228,11 @@ class SubsribeController:
         
         if (command.startswith("福建")):
             return Subsriber().from_command(id,"fj")
+
+        ## handle command like "地震 {台灣縣市}" ,ex: "地震 台北"         
+        result = method.from_command(id,command)
+        if (result['pos'] is not None ):
+            return Subsriber().from_command(id,'tw',result['pos'],method=method)
+        else:
+            return None
+
