@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from requests_html import AsyncHTMLSession
 from datetime import datetime
 from typing   import AsyncIterator
+from opencc   import OpenCC
 
 
 import websockets
@@ -108,6 +109,8 @@ class EEW:
             
     @classmethod
     def circle_depth(self,Depth) -> str:
+        if Depth is None:
+            return self.WHITE_CIRCLE
         if Depth > 300:
             return self.WHITE_CIRCLE
         elif Depth > 70:
@@ -140,6 +143,7 @@ class EEW:
         return self.RED_CIRCLE
     
     def json_to_eewdata(self,json_data,pos) -> EEW_data:
+        cc = OpenCC('s2tw')
         if (pos == "jp"):        
             return EEW_data(
                 json_data['EventID'],
@@ -150,14 +154,14 @@ class EEW:
                 json_data['Longitude'],
                 json_data['Magunitude'],
                 json_data['Depth'],
-                json_data['MaxIntensity'],
+                int(json_data['MaxIntensity']),
             )
         elif (pos == "fj"):
             return EEW_data(
                 json_data['EventID'],
                 json_data['ReportTime'].replace(" ","\n"),
                 json_data['OriginTime'].replace(" ","\n"),
-                json_data['HypoCenter'],
+                cc.convert(json_data['HypoCenter']),
                 json_data['Latitude'],
                 json_data['Longitude'],
                 json_data['Magunitude'],
@@ -169,12 +173,12 @@ class EEW:
                 json_data['ID'],
                 json_data['ReportTime'].replace(" ","\n"),
                 json_data['OriginTime'].replace(" ","\n"),
-                json_data['HypoCenter'],
+                cc.convert(json_data['HypoCenter']),
                 json_data['Latitude'],
                 json_data['Longitude'],
                 json_data['Magunitude'],
                 json_data['Depth'],
-                json_data['MaxIntensity'],
+                int(json_data['MaxIntensity']),
             )
     
     def _get_url_by_pos(self,pos="tw"):
