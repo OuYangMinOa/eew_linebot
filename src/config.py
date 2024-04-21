@@ -7,7 +7,7 @@ from linebot.v3.messaging import Configuration
 from .user                import SubsribeController
 
 
-PORT = 9008
+PORT = 9009
 DATA_FOLDER = SubsribeController.DATA_FOLDER
 
 os.makedirs(DATA_FOLDER, exist_ok=True)
@@ -23,6 +23,8 @@ print(eew_dict)
 
 LINE_PUSH_URL = 'https://api.line.me/v2/bot/message/push'
 
+print(os.environ['CHANNEL_SECRET'])
+print(os.environ["CHANNEL_ACCESS_TOKEN"])
 app = Flask(__name__)
 configuration  = Configuration(access_token=os.environ['CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])

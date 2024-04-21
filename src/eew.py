@@ -94,10 +94,12 @@ class EEW:
         }
 
 
+    def get_random_proxy(self) -> str:
+        return random.choice(self.proxies)
 
     def build_proxy(self) -> None:
         if (self.use_proxy):
-            self.builder  = Proxies(url = self.URL)\
+            self.builder  = Proxies(url = "https://api.line.me:443")\
                                 .set_p(6)\
                                 .set_num(10)\
                                 .add_ssl_proxies()
@@ -121,6 +123,8 @@ class EEW:
             return self.RED_CIRCLE
     @classmethod
     def circle_mag(self,mag) -> str:
+        if (mag is None):
+            return self.WHITE_CIRCLE
         if mag < 4 :
             return self.WHITE_CIRCLE
         elif mag < 5:

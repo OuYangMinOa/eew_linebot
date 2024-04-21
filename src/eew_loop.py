@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import uuid
 import aiohttp
 import asyncio
 import threading
@@ -18,26 +19,33 @@ class EEWLoop:
     def __init__(self,loop) -> None:
         self.loop = loop
         self.EEW  = EEW()
+        # self.EEW.build_proxy()
 
     def start_alert_tw(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("tw"),)).start()
+        time.sleep(1)
         return self
 
     def start_alert_jp(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("jp"),)).start()
+        time.sleep(1)
         return self
     
     def start_alert_fj(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("fj"),)).start()  
+        time.sleep(1)
         return self
     
     def start_alert_sc(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("sc"),)).start()
+        time.sleep(1)
         return self
 
     async def loop_alert(self,pos="tw"):
         print(f"[*] Start alert {pos} !")
+        # await asyncio.sleep(5)
         await self.send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),pos,121.59,23.92,5.6,40,4),pos)
+
         async for each in self.EEW.wss_alert(pos):
             await self.send(each, pos)
             print(pos,each)
@@ -51,18 +59,26 @@ class EEWLoop:
                 continue
             if (each_subscribe.threshold(_EEW)):
                 body = build_body(each_subscribe.id, this_message)
-                tasks.append(asyncio.create_task( self.send_single(body)))
-        await asyncio.gather(*tasks)
+                await self.send_single(body)
+
+        #         tasks.append(asyncio.create_task( self.send_single(body)))
+        # await asyncio.gather(*tasks)
 
 
     async def send_single(self,body):
+        # headers['X-Line-Retry-Key']=  f'{uuid.uuid4()}'   
+        # print(headers)
         async with aiohttp.ClientSession() as session:
             async with session.post(LINE_PUSH_URL, headers=headers, data=json.dumps(body).encode('utf-8')) as response:
-                pass
+                print(response.status)
+                # pass
 
     async def send_maker(self, _EEW, pos="tw"):
         maker_sub : Subsriber = SubsribeController.handle_commamd(os.environ['DEVELOP'],"台灣 台北")
         maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"jp")
+        maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"sc")
+        maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"fj")
+        print(maker_sub)
 
         tasks = []
         for each_subscribe in [maker_sub,]:
@@ -70,6 +86,8 @@ class EEWLoop:
                 continue
             this_message = _EEW.to_text()  # For testing reasons (grab the time), I put it in the loop.
             if (each_subscribe.threshold(_EEW)):
+                print(pos, each_subscribe.country)
                 body = build_body(each_subscribe.id, this_message)
-                tasks.append(asyncio.create_task( self.send_single(body)))
-        await asyncio.gather(*tasks)
+                await self.send_single(body)
+        #         tasks.append(asyncio.create_task( self.send_single(body)))
+        # await asyncio.gather(*tasks)
