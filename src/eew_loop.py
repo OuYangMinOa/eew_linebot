@@ -53,7 +53,7 @@ class EEWLoop:
                 if (( self._last_tw_time is None or (this_time - self._last_tw_time).total_seconds() > 120 )): # 看台灣中央氣象局已發布此地震
                     if  ( self._last_fj_time is None or(
                         ( (this_time - self._last_fj_time).total_seconds() > 120 or each.Magnitude > self._last_fj_mag+0.2 ))):
-                        await self.send(each)
+                        await self.send(each,pos)
                 self._last_fj_time = this_time
                 self._last_fj_mag  = each.Magnitude
                 print(each)
@@ -61,7 +61,7 @@ class EEWLoop:
             async for each in self.EEW.wss_alert(pos):
                 await self.send(each)
                 self._last_tw_time = self.fj_time(each.OriginTime)
-                print(each)
+                print(each,pos)
 
     async def send(self, _EEW:EEW_data, pos):   #  eew_list : list[Subsriber]
         this_message = _EEW.to_text()
@@ -70,7 +70,7 @@ class EEWLoop:
             each_subscribe = eew_dict[each_id]
             if (pos not in each_subscribe.country):
                 continue
-            if (each_subscribe.threshold(_EEW)):
+            if (each_subscribe.threshold(_EEW, pos)):
                 body = build_body(each_subscribe.id, this_message)
                 # await self.send_single(body)
                 tasks.append(asyncio.create_task( self.send_single(body)))
@@ -97,7 +97,7 @@ class EEWLoop:
             if (pos not in each_subscribe.country):
                 continue
             this_message = _EEW.to_text()  # For testing reasons (grab the time), I put it in the loop.
-            if (each_subscribe.threshold(_EEW)):
+            if (each_subscribe.threshold(_EEW, pos)):
                 print(pos, each_subscribe.country)
                 body = build_body(each_subscribe.id, this_message)
                 tasks.append(asyncio.create_task( self.send_single(body)))
