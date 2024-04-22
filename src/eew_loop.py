@@ -18,37 +18,47 @@ def build_body(to, msg):
 class EEWLoop:
     def __init__(self,loop) -> None:
         self.loop = loop
+        self._last_fj_time = None # 防止 福建 一直傳送
+        self._last_tw_time = None
+        self._last_fj_mag  = None 
         self.EEW  = EEW()
         # self.EEW.build_proxy()
 
     def start_alert_tw(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("tw"),)).start()
-        time.sleep(1)
         return self
 
     def start_alert_jp(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("jp"),)).start()
-        time.sleep(1)
         return self
     
     def start_alert_fj(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("fj"),)).start()  
-        time.sleep(1)
         return self
     
     def start_alert_sc(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("sc"),)).start()
-        time.sleep(1)
         return self
 
     async def loop_alert(self,pos="tw"):
         print(f"[*] Start alert {pos} !")
         # await asyncio.sleep(5)
         await self.send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),pos,121.59,23.92,5.6,40,4),pos)
-
-        async for each in self.EEW.wss_alert(pos):
-            await self.send(each, pos)
-            print(pos,each)
+        if (pos == "fj"):
+            async for each in self.EEW.wss_alert(pos):
+                this_time =  self.fj_time(each.OriginTime)
+                if (( self._last_tw_time is None or (this_time - self._last_tw_time).total_seconds() > 120 )): # 看台灣中央氣象局已發布此地震
+                    if  ( self._last_fj_time is None or(
+                        ( (this_time - self._last_fj_time).total_seconds() > 120 or each.Magnitude > self._last_fj_mag+0.2 ))):
+                        await self.send(each)
+                self._last_fj_time = this_time
+                self._last_fj_mag  = each.Magnitude
+                print(each)
+        else:
+            async for each in self.EEW.wss_alert(pos):
+                await self.send(each)
+                self._last_tw_time = self.fj_time(each.OriginTime)
+                print(each)
 
     async def send(self, _EEW:EEW_data, pos):   #  eew_list : list[Subsriber]
         this_message = _EEW.to_text()
@@ -59,10 +69,9 @@ class EEWLoop:
                 continue
             if (each_subscribe.threshold(_EEW)):
                 body = build_body(each_subscribe.id, this_message)
-                await self.send_single(body)
-
-        #         tasks.append(asyncio.create_task( self.send_single(body)))
-        # await asyncio.gather(*tasks)
+                # await self.send_single(body)
+                tasks.append(asyncio.create_task( self.send_single(body)))
+        await asyncio.gather(*tasks)
 
 
     async def send_single(self,body):
@@ -71,7 +80,7 @@ class EEWLoop:
         async with aiohttp.ClientSession() as session:
             async with session.post(LINE_PUSH_URL, headers=headers, data=json.dumps(body).encode('utf-8')) as response:
                 print(response.status)
-                # pass
+                return response.status
 
     async def send_maker(self, _EEW, pos="tw"):
         maker_sub : Subsriber = SubsribeController.handle_commamd(os.environ['DEVELOP'],"台灣 台北")
@@ -88,6 +97,5 @@ class EEWLoop:
             if (each_subscribe.threshold(_EEW)):
                 print(pos, each_subscribe.country)
                 body = build_body(each_subscribe.id, this_message)
-                await self.send_single(body)
-        #         tasks.append(asyncio.create_task( self.send_single(body)))
-        # await asyncio.gather(*tasks)
+                tasks.append(asyncio.create_task( self.send_single(body)))
+        await asyncio.gather(*tasks)
