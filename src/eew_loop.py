@@ -39,7 +39,10 @@ class EEWLoop:
     def start_alert_sc(self):
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("sc"),)).start()
         return self
-
+    
+    def fj_time(self,date_string:str):
+        return datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+    
     async def loop_alert(self,pos="tw"):
         print(f"[*] Start alert {pos} !")
         # await asyncio.sleep(5)
