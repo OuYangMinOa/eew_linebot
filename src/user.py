@@ -148,8 +148,11 @@ class Subsriber:
         if (self.pos == "sc"):
             return True
         
-        if (self.pos == "fj" and _eew.Magnitude>5):
-            return True
+        if (self.pos == "fj" ):
+            if (_eew.Magnitude>5):
+                return True
+            else:
+                return False
 
         if (_eew.MaxIntensity is None or _eew.Magnitude is None or _eew.Depth is None):
             return True
