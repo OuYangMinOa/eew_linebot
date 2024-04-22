@@ -7,7 +7,7 @@ from linebot.v3.messaging import Configuration
 from .user                import SubsribeController
 
 
-PORT = 9009
+PORT = 9010
 DATA_FOLDER = SubsribeController.DATA_FOLDER
 
 os.makedirs(DATA_FOLDER, exist_ok=True)
