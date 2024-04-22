@@ -132,7 +132,8 @@ class EEW:
         else:
             return self.RED_CIRCLE
     @classmethod
-    def circle_intensity(self,intensity) -> str:
+    def circle_intensity(self,intensity_str) -> str:
+        intensity= int(intensity_str[0])
         if (intensity is None ):
             return self.WHITE_CIRCLE
         intensity = int(intensity)
@@ -158,7 +159,7 @@ class EEW:
                 json_data['Longitude'],
                 json_data['Magunitude'],
                 json_data['Depth'],
-                int(json_data['MaxIntensity']),
+                json_data['MaxIntensity'],
             )
         elif (pos == "fj"):
             return EEW_data(
@@ -182,7 +183,7 @@ class EEW:
                 json_data['Longitude'],
                 json_data['Magunitude'],
                 json_data['Depth'],
-                int(json_data['MaxIntensity']),
+                json_data['MaxIntensity'],
             )
     
     def _get_url_by_pos(self,pos="tw"):
