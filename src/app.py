@@ -89,7 +89,7 @@ def handle_message(event:MessageEvent):
             )
             return
         
-        this_sub = SubsribeController.handle_commamd(user_id, command)
+        this_sub = SubsribeController.handle_commamd(source_id, command)
 
         if (this_sub is None):
             line_bot_api.reply_message_with_http_info(
@@ -109,12 +109,12 @@ def handle_message(event:MessageEvent):
             return
 
 
-        if (user_id in eew_dict):
+        if (source_id in eew_dict):
             if (this_sub.last_cmd is not None):
-                eew_dict[user_id].from_command(*this_sub.last_cmd)
+                eew_dict[source_id].from_command(*this_sub.last_cmd)
             SubsribeController.to_file(EEW_LIST_FILE, eew_dict)
         else:
-            eew_dict[user_id] = this_sub
+            eew_dict[source_id] = this_sub
             addtxt(EEW_LIST_FILE, str(this_sub))
 
 
