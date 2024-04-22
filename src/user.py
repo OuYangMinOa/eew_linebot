@@ -78,6 +78,7 @@ class Subsriber:
         self.pos = None
         self.country = []
         self.last_cmd  = None
+        self.notify = None
     
     def __str__(self) -> str:
         return f"{self.id}_{self.pos}_{'_'.join(self.country)}"

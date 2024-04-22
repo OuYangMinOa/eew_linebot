@@ -131,6 +131,6 @@ def handle_message(event:MessageEvent):
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=[TextMessage(text=f"{eew_dict[user_id].get_notify()}")]
+                messages=[TextMessage(text=f"{eew_dict[source_id].get_notify()}")]
             )
         )
