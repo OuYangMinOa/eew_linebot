@@ -139,16 +139,16 @@ class Subsriber:
         return distance_to_taipei(lat,lon,self.lat,self.lon)
 
     def threshold(self, _eew : EEW_data,pos="tw"):
-        if (self.pos is None):
+        # if (self.pos is None):
+        #     return True
+        
+        if (pos == "jp"):
             return True
         
-        if (self.pos == "jp"):
+        if (pos == "sc"):
             return True
         
-        if (self.pos == "sc"):
-            return True
-        
-        if (self.pos == "fj" ):
+        if (pos == "fj" ):
             if (_eew.Magnitude>5):
                 return True
             else:
@@ -157,7 +157,7 @@ class Subsriber:
         # if (_eew.MaxIntensity is None or _eew.Magnitude is None or _eew.Depth is None):
         #     return True
 
-        if (self.pos == "all"):
+        if (self.pos == "all" or self.pos is None):
             return True
         this_dis = self.calcultae_distance(_eew.Latitude, _eew.Longitude)
         print(self.pos, this_dis, _eew.Magnitude, _eew.MaxIntensity)
