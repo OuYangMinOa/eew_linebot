@@ -59,7 +59,7 @@ class EEWLoop:
                 print(each)
         else:
             async for each in self.EEW.wss_alert(pos):
-                await self.send(each)
+                await self.send(each,pos)
                 self._last_tw_time = self.fj_time(each.OriginTime)
                 print(each,pos)
 
