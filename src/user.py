@@ -154,8 +154,8 @@ class Subsriber:
             else:
                 return False
 
-        if (_eew.MaxIntensity is None or _eew.Magnitude is None or _eew.Depth is None):
-            return True
+        # if (_eew.MaxIntensity is None or _eew.Magnitude is None or _eew.Depth is None):
+        #     return True
 
         if (self.pos == "all"):
             return True
