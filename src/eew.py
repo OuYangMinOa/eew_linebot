@@ -133,10 +133,9 @@ class EEW:
             return self.RED_CIRCLE
     @classmethod
     def circle_intensity(self,intensity_str) -> str:
-        intensity= int(intensity_str[0])
+        intensity = int(intensity_str[0])
         if (intensity is None ):
             return self.WHITE_CIRCLE
-        intensity = int(intensity)
         if intensity == 1:
             return self.WHITE_CIRCLE
         if intensity == 2:

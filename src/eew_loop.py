@@ -46,7 +46,7 @@ class EEWLoop:
     async def loop_alert(self,pos="tw"):
         print(f"[*] Start alert {pos} !")
         # await asyncio.sleep(5)
-        await self.send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),pos,121.59,23.92,5.6,40,4),pos)
+        await self.send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),pos,121.59,23.92,5.6,40,"4弱"),pos)
         if (pos == "fj"):
             async for each in self.EEW.wss_alert(pos):
                 this_time =  self.fj_time(each.OriginTime)
