@@ -41,7 +41,7 @@ class EEWLoop:
         return self
     
     def fj_time(self,date_string:str):
-        return datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+        return datetime.strptime(date_string, '%Y-%m-%d\n%H:%M:%S')
     
     async def loop_alert(self,pos="tw"):
         print(f"[*] Start alert {pos} !")
