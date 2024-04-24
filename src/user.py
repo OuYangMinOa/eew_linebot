@@ -116,11 +116,12 @@ class Subsriber:
     def from_command(self,id, country, pos = None, method = IdPos):
         self.id  = id
         temp_pos = method.correct_pos(pos)
-        
+        # print(temp_pos)
         self.last_cmd = [id, country, pos]
         if (country not in self.country): # Add country to self.country
             self.country.append(country)
             this_country_str = self.get_country_str()
+            self.pos = temp_pos
             self.notify = f"好的 ! \n[{this_country_str}]\n發生地震時，我會提醒您。\n(此預警並非百分百精準。)"
         elif (country in self.country):
             if (country != "tw"): # remove country from self.country
@@ -175,8 +176,8 @@ class Subsriber:
 
     #  {"經度": 121.6739, "緯度": 24.91571}
     def _set_lat_lon(self):
-        self.lat = self.locations[self.pos]["經度"]
-        self.lon = self.locations[self.pos]["緯度"]
+        self.lon = self.locations[self.pos]["經度"]
+        self.lat = self.locations[self.pos]["緯度"]
 
     
 
