@@ -41,7 +41,7 @@ class EEWLoop:
         return self
     
     def fj_time(self,date_string:str):
-        return datetime.strptime(date_string, '%Y-%m-%d\n%H:%M:%S')
+        return datetime.strptime(date_string, '%Y/%m/%d\n%H:%M:%S')
     
     async def loop_alert(self,pos="tw"):
         print(f"[*] Start alert {pos} !")
@@ -87,9 +87,10 @@ class EEWLoop:
 
     async def send_maker(self, _EEW, pos="tw"):
         maker_sub : Subsriber = SubsribeController.handle_commamd(os.environ['DEVELOP'],"台灣 台北")
-        maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"jp")
-        maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"sc")
-        maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"fj")
+        
+        # maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"jp")
+        # maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"sc")
+        # maker_sub = maker_sub.from_command(os.environ['DEVELOP'],"fj")
         print(maker_sub)
 
         tasks = []

@@ -20,10 +20,11 @@ class IdPos():
             return "all"
         if '台' in pos:
             pos = pos.replace('台','臺')
-
+        
         for each in self.POS_LIST:
-            if pos in each or each in pos:   
+            if ((pos in each) or (each in pos)):   
                 return each
+        
         return None
             
     @classmethod
