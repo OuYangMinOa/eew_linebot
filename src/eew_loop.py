@@ -40,8 +40,11 @@ class EEWLoop:
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("sc"),)).start()
         return self
     
-    def fj_time(self,date_string:str):
-        return datetime.strptime(date_string, '%Y/%m/%d\n%H:%M:%S')
+    def fj_time(self,date_string:str,pos):
+        if (pos=="jp"):
+            return datetime.strptime(date_string, '%Y/%m/%d\n%H:%M:%S')  
+        else:
+            return datetime.strptime(date_string, '%Y-%m-%d\n%H:%M:%S')
     
     async def loop_alert(self,pos="tw"):
         print(f"[*] Start alert {pos} !")
@@ -49,7 +52,7 @@ class EEWLoop:
         await self.send_maker(EEW_data(1,datetime.now(),datetime.now().strftime("%Y年%m月%d日 %H:%M:%S"),pos,23.92,121.59,5.6,40,"4弱"),pos)
         if (pos == "fj"):
             async for each in self.EEW.wss_alert(pos):
-                this_time =  self.fj_time(each.OriginTime)
+                this_time =  self.fj_time(each.OriginTime,pos)
                 if (( self._last_tw_time is None or (this_time - self._last_tw_time).total_seconds() > 120 )): # 看台灣中央氣象局已發布此地震
                     if  ( self._last_fj_time is None or(
                         ( (this_time - self._last_fj_time).total_seconds() > 120 or each.Magnitude > self._last_fj_mag+0.2 ))):
@@ -60,7 +63,7 @@ class EEWLoop:
         else:
             async for each in self.EEW.wss_alert(pos):
                 await self.send(each,pos)
-                self._last_tw_time = self.fj_time(each.OriginTime)
+                self._last_tw_time = self.fj_time(each.OriginTime,pos)
                 print(each,pos)
 
     async def send(self, _EEW:EEW_data, pos):   #  eew_list : list[Subsriber]
