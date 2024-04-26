@@ -202,7 +202,7 @@ class EEW:
                             yield self.json_to_eewdata(r,pos)
             except Exception as e:
                 print(f"{pos} Connection closed : {e}")
-                time.sleep(10)
+                await asyncio.sleep(0.5)
                 print(f"{pos} Reconnect")
             
 
