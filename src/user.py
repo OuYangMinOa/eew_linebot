@@ -169,10 +169,10 @@ class Subsriber:
         
         if (this_dis<60  ): 
             return True
-        elif (this_dis<120): 
-            return (_eew.Magnitude >= 4.8) or (this_inten >= 4)
+        elif (this_dis<110): 
+            return (_eew.Magnitude >= 4.9 and this_inten > 3) or (this_inten >= 4)
         elif (this_dis<180): 
-            return (_eew.Magnitude >= 5) or (this_inten >  4)
+            return (_eew.Magnitude >= 5 and this_inten > 3) or (this_inten >  4)
         else : 
             return (_eew.Magnitude >= 6) or (this_inten >= 5)
 
