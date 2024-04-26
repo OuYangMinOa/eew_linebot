@@ -169,12 +169,12 @@ class Subsriber:
         
         if (this_dis<60  ): 
             return True
-        elif (this_dis<110): 
-            return (_eew.Magnitude >= 4.9 and this_inten > 3) or (this_inten >= 4)
+        elif (this_dis<100): 
+            return (_eew.Magnitude >= 4.8 and this_inten > 3.5) or (this_inten >= 4)
         elif (this_dis<180): 
-            return (_eew.Magnitude >= 5 and this_inten > 3) or (this_inten >  4)
+            return (_eew.Magnitude >= 5   and this_inten > 3.5) or (this_inten >  4)
         else : 
-            return (_eew.Magnitude >= 6) or (this_inten >= 5)
+            return (_eew.Magnitude >= 6   and this_inten > 3.5) or (this_inten >= 5)
 
     #  {"經度": 121.6739, "緯度": 24.91571}
     def _set_lat_lon(self):
