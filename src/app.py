@@ -58,14 +58,15 @@ def handle_message(event:MessageEvent):
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=[TextMessage(text=
-                    ("目前只支援地震通知功能\n"
-                    "若想要其他的功能請聯絡歐陽\n"
-                    "請輸入國家跟所在地\n"
-                    "(地震 國家 台灣縣市)。 \n"
-                    "ex:\n\t1. 地震 台灣 台北\n\t2. 地震 日本\n"
-                    "目前國家支援 (日本 台灣 四川 福建)\n所在地支援台灣所有縣市")
-                )]
+                messages=[TextMessage(text=("請輸入國家跟所在地\n"
+                                            "(地震 國家 台灣縣市)。 \n"
+                                            "ex:\n\t1. 地震 台灣 台北\n\t2. 地震 日本\n"
+                                            "目前國家支援 (日本 台灣 四川 福建)\n"
+                                            "(每個國家發出地震警報的標準可能不一致)\n"
+                                            "推薦台灣與福建\n"
+                                            "所在地支援台灣所有縣市\n"
+                                            "(若要監控全國 請輸入`all`)"
+                ))]
             )
         )
 
