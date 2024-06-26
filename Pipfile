@@ -19,6 +19,7 @@ aiohttp = "*"
 websocket = "*"
 websockets = "*"
 opencc-python-reimplemented = "*"
+async-timeout = "*"
 
 [dev-packages]
 
