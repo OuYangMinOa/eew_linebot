@@ -12,7 +12,7 @@ from src.eew_loop      import EEWLoop
 
 async def START_SERVICES():
     config = Config()
-    config.bind = [f"127.0.0.1:{PORT}"]
+    config.bind = [f"0.0.0.0:{PORT}"]
     config.debug = False
     await serve(app, config)
 
