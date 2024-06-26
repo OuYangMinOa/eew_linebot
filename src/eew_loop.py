@@ -7,7 +7,7 @@ import asyncio
 import threading
 
 from requests_html import AsyncHTMLSession
-from .eew     import EEW, EEW_data
+from .core.eew     import EEW, EEW_data
 from .config  import configuration, headers, LINE_PUSH_URL, eew_dict
 from datetime import datetime
 from .user    import Subsriber, SubsribeController

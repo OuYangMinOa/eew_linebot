@@ -1,4 +1,4 @@
-from .proxies import Proxies
+from ..proxies import Proxies
 from dataclasses import dataclass
 from requests_html import AsyncHTMLSession
 from datetime import datetime

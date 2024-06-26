@@ -1,5 +1,5 @@
 from abc      import ABC, abstractmethod
-from .eew     import distance_to_taipei, EEW_data
+from .core.eew     import distance_to_taipei, EEW_data
 from .file_os import readfile
 from glob     import glob
 
