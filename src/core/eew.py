@@ -109,50 +109,50 @@ class EEW:
             print(f"[*] proxies num : {len(self.proxies)}")
             
     @classmethod
-    def circle_depth(self,Depth) -> str:
+    def circle_depth(cls,Depth) -> str:
         if Depth is None:
-            return self.WHITE_CIRCLE
+            return cls.WHITE_CIRCLE
         if Depth > 300:
-            return self.WHITE_CIRCLE
+            return cls.WHITE_CIRCLE
         elif Depth > 70:
-            return self.GREEN_CIRCLE
+            return cls.GREEN_CIRCLE
         elif Depth > 30:
-            return self.BLUE_CIRCLE
+            return cls.BLUE_CIRCLE
         else:
-            return self.RED_CIRCLE
+            return cls.RED_CIRCLE
     @classmethod
-    def circle_mag(self,mag) -> str:
+    def circle_mag(cls,mag) -> str:
         if (mag is None):
-            return self.WHITE_CIRCLE
+            return cls.WHITE_CIRCLE
         if mag < 4 :
-            return self.WHITE_CIRCLE
+            return cls.WHITE_CIRCLE
         elif mag < 5:
-            return self.YELLOW_CIRCLE
+            return cls.YELLOW_CIRCLE
         else:
-            return self.RED_CIRCLE
+            return cls.RED_CIRCLE
     @classmethod
-    def circle_intensity(self,intensity_str) -> str:
+    def circle_intensity(cls,intensity_str) -> str:
         if (intensity_str is None ):
-            return self.WHITE_CIRCLE
+            return cls.WHITE_CIRCLE
         
         if (isinstance(intensity_str,str)):
             if (intensity_str[0].isnumeric()):
                 intensity = int(intensity_str[0])
             else:
-                return self.WHITE_CIRCLE
+                return cls.WHITE_CIRCLE
         elif(isinstance(intensity_str,float) or isinstance(intensity_str,int)):
             intensity = math.floor(intensity_str)
         else:
-            return self.WHITE_CIRCLE
+            return cls.WHITE_CIRCLE
         if intensity == 1:
-            return self.WHITE_CIRCLE
+            return cls.WHITE_CIRCLE
         if intensity == 2:
-            return self.BLUE_CIRCLE
+            return cls.BLUE_CIRCLE
         if intensity == 3:
-            return self.GREEN_CIRCLE
+            return cls.GREEN_CIRCLE
         if intensity == 4:
-            return self.YELLOW_CIRCLE
-        return self.RED_CIRCLE
+            return cls.YELLOW_CIRCLE
+        return cls.RED_CIRCLE
     
     def json_to_eewdata(self,json_data,pos) -> EEW_data:
         cc = OpenCC('s2tw')
