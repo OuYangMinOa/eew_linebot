@@ -47,15 +47,14 @@ class EEW_data:
     Depth: int
     MaxIntensity: int
 
-    def __eq__(self, value: object) -> bool:
-        return self.id == value.id
+    def __eq__(self, other) -> bool:
+        return self.id == other.id
 
     def send_threshold(self):
         if (self.get_dis()<60 ): return True
         if (self.get_dis()<180): return self.Magnitude >= 5 or self.MaxIntensity >= 4
         else : return self.Magnitude >= 6 or self.MaxIntensity >= 5
-        return False
-    
+        raise ValueError(f"Invalid threshold")
 
     def get_dis(self):
         return distance_to_taipei(self.Latitude, self.Longitude)
@@ -145,7 +144,6 @@ class EEW:
             intensity = math.floor(intensity_str)
         else:
             return self.WHITE_CIRCLE
-
         if intensity == 1:
             return self.WHITE_CIRCLE
         if intensity == 2:
