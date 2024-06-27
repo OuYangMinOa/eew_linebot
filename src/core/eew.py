@@ -44,8 +44,8 @@ class EEW_data:
     Latitude: float 
     Longitude: float
     Magnitude: float
-    Depth: int
-    MaxIntensity: int
+    Depth: int|None
+    MaxIntensity: int|None
 
     def __eq__(self, other) -> bool:
         return self.id == other.id
