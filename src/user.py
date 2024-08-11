@@ -1,8 +1,9 @@
-from abc      import ABC, abstractmethod
-from .core.eew     import distance_to_taipei, EEW_data
-from .file_os import readfile
-from glob     import glob
+from .core.eew   import distance_to_taipei, EEW_data
+from abc         import ABC, abstractmethod
+from .file_os    import readfile
+from glob        import glob
 
+import math
 import os
 
 #MARK: IdPos
@@ -145,7 +146,21 @@ class Subsriber:
         #     return True
         
         if (pos == "jp"):
-            return True
+            if (isinstance(_eew.MaxIntensity,str)):
+                if (_eew.MaxIntensity[0].isnumeric()):
+                    intensity = int(_eew.MaxIntensity[0])
+                else:
+                    return
+            elif(isinstance(_eew.MaxIntensity,float) or isinstance(_eew.MaxIntensity,int)):
+                intensity = math.floor(_eew.MaxIntensity)
+            else:
+                return
+            
+            if (intensity < 5):
+                return False
+            else:
+                return True
+            
         
         if (pos == "sc"):
             return True
