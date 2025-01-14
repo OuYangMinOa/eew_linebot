@@ -7,6 +7,7 @@ import asyncio
 import threading
 
 from requests_html import AsyncHTMLSession
+from collections   import defaultdict
 from .core.eew     import EEW, EEW_data
 from .config  import configuration, headers, LINE_PUSH_URL, eew_dict
 from datetime import datetime
@@ -22,6 +23,8 @@ class EEWLoop:
         self._last_tw_time = None
         self._last_fj_mag  = None 
         self.EEW  = EEW()
+        self.last_mag_map : dict[str, float] = defaultdict(float)
+        self.last_report_time_map : dict[str, datetime] = defaultdict(datetime.now())
         # self.EEW.build_proxy()
 
     def start_alert_tw(self):
@@ -40,7 +43,7 @@ class EEWLoop:
         threading.Thread(target=self.loop.create_task, args=(self.loop_alert("sc"),)).start()
         return self
     
-    def fj_time(self,date_string:str,pos):
+    def fj_time(self,date_string:str,pos): # get the time from the string and pos
         if (pos=="jp"):
             return datetime.strptime(date_string, '%Y/%m/%d\n%H:%M:%S')  
         else:
@@ -61,8 +64,15 @@ class EEWLoop:
                 self._last_fj_mag  = each.Magnitude
                 print(each)
         else:
+            each : EEW_data
             async for each in self.EEW.wss_alert(pos):
+                # 如果時間間隔小於 1 分鐘，而且規模沒有比較大，就不發送
+                if ( (datetime.now() - self.last_report_time_map[pos]).total_seconds() < 60 and each.Magnitude < self.last_mag_map[pos]):
+                    self.last_report_time_map[pos] = datetime.now()
+                    continue
                 await self.send(each,pos)
+                self.last_mag_map[pos] = each.Magnitude 
+                self.last_report_time_map[pos] = datetime.now()
                 self._last_tw_time = self.fj_time(each.OriginTime,pos)
                 print(each,pos)
 
