@@ -24,7 +24,7 @@ class EEWLoop:
         self._last_fj_mag  = None 
         self.EEW  = EEW()
         self.last_mag_map : dict[str, float] = defaultdict(float)
-        self.last_report_time_map : dict[str, datetime] = defaultdict(datetime.now())
+        self.last_report_time_map : dict[str, datetime] = defaultdict(datetime.now)
         # self.EEW.build_proxy()
 
     def start_alert_tw(self):
