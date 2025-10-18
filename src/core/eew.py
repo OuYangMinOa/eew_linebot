@@ -86,11 +86,13 @@ class EEW:
         self.proxies = []
         self.session = None 
         self.pos_url_wss_dict = {
-            "tw": "wss://ws-api.wolfx.jp/cwa_eew",
-            "jp": "wss://ws-api.wolfx.jp/jma_eew",
-            "fj": "wss://ws-api.wolfx.jp/fj_eew", # 福建
-            "sc": "wss://ws-api.wolfx.jp/sc_eew", # 四川
+            "tw": "ws://localhost:8080/relay?source=wss://ws-api.wolfx.jp/cwa_eew",
+            "jp": "ws://localhost:8080/relay?source=wss://ws-api.wolfx.jp/jma_eew",
+            "fj": "ws://localhost:8080/relay?source=wss://ws-api.wolfx.jp/fj_eew", # 福建
+            "sc": "ws://localhost:8080/relay?source=wss://ws-api.wolfx.jp/sc_eew", # 四川
         }
+
+        
 
 
     def get_random_proxy(self) -> str:
