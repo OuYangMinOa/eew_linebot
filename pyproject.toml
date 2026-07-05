@@ -1,0 +1,34 @@
+[project]
+name = "eew-linebot"
+version = "1.0.0"
+description = "LINE bot that pushes earthquake early warnings (TW / JP / FJ / SC) to subscribers"
+readme = "Readme.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.9",
+    "flask>=3.0",
+    "hypercorn>=0.16",
+    "line-bot-sdk>=3.5",
+    "ngrok>=1.3",
+    "opencc-python-reimplemented>=0.1.7",
+    "python-dotenv>=1.0",
+    "websockets>=12",
+]
+
+[project.scripts]
+eew-linebot = "eew_linebot.main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/eew_linebot"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
