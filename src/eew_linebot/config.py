@@ -30,6 +30,8 @@ class Settings:
     ws_relay: str
     regions: tuple[str, ...]
     data_file: Path
+    # 有給 token 才會啟動 Telegram bot
+    telegram_bot_token: str | None = None
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -50,6 +52,7 @@ class Settings:
             ws_relay=os.environ.get("EEW_WS_RELAY", DEFAULT_WS_RELAY),
             regions=regions,
             data_file=Path(os.environ.get("EEW_DATA_FILE", "data/eew_listv3.txt")),
+            telegram_bot_token=os.environ.get("TELEGRAM_BOT_TOKEN") or None,
         )
 
     def ws_url(self, region: str) -> str:

@@ -1,7 +1,10 @@
 # EEW LINE Bot
 
-LINE 地震速報 bot：監聽 [wolfx](https://wolfx.jp) 的 EEW WebSocket（台灣 / 日本 / 福建 / 四川），
+LINE + Telegram 地震速報 bot：監聽 [wolfx](https://wolfx.jp) 的 EEW WebSocket（台灣 / 日本 / 福建 / 四川），
 依訂閱者所在縣市與震度門檻過濾後推播警報。
+
+Telegram 為選用功能：`.env` 有設 `TELEGRAM_BOT_TOKEN` 就會啟動（long polling，不需公開網址），
+沒設就只跑 LINE。兩邊指令、選單按鈕、訂閱資料完全共用。
 
 ## Setup
 
@@ -24,7 +27,7 @@ LINE 地震速報 bot：監聽 [wolfx](https://wolfx.jp) 的 EEW WebSocket（台
     uv run eew-linebot
     ```
 
-## 使用方式（LINE 對話）
+## 使用方式（LINE / Telegram 對話）
 
 - `地震 台灣` — 開啟按鈕選單：先選 全國/北部/中部/南部/東部/離島，再選縣市
 - `地震 台灣 台北` — 訂閱台灣警報，所在地台北（縣市內近震必推，遠震依規模/震度過濾）
@@ -34,7 +37,11 @@ LINE 地震速報 bot：監聽 [wolfx](https://wolfx.jp) 的 EEW WebSocket（台
 - `地震 取消 日本` — 取消訂閱
 - `help` / `幫助` — 顯示說明
 
-回覆訊息都附 Quick Reply 按鈕，點按鈕即可訂閱／查詢／取消，不用手打指令。
+回覆訊息都附按鈕（LINE 是 Quick Reply、Telegram 是 Inline Keyboard），
+點按鈕即可訂閱／查詢／取消，不用手打指令。Telegram 另支援 `/start`、`/help` 顯示說明。
+
+注意：Telegram bot 預設開啟 privacy mode，在「群組」裡收不到一般文字訊息，
+要用文字指令請到 @BotFather 的 `/setprivacy` 關閉；按鈕點擊不受此限制。
 
 ## 開發
 

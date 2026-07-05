@@ -14,8 +14,9 @@ from .app import create_app
 from .config import Settings
 from .eew_client import EEWClient
 from .monitor import AlertMonitor
-from .notifier import LineNotifier
+from .notifier import LineNotifier, PushRouter
 from .subscribers import SubscriberStore
+from .telegram import TelegramBot
 
 logger = logging.getLogger(__name__)
 
@@ -38,14 +39,25 @@ def main() -> None:
 
 async def run(settings: Settings) -> None:
     store = SubscriberStore(settings.data_file).load()
-    notifier = LineNotifier(settings.channel_access_token)
-    monitor = AlertMonitor(settings, store, notifier, EEWClient(settings))
+    line_notifier = LineNotifier(settings.channel_access_token)
+
+    telegram_bot = None
+    if settings.telegram_bot_token:
+        telegram_bot = TelegramBot(settings.telegram_bot_token, store)
+        logger.info("telegram bot enabled")
+    else:
+        logger.info("TELEGRAM_BOT_TOKEN not set, telegram bot disabled")
+
+    router = PushRouter(line_notifier, telegram_bot)
+    monitor = AlertMonitor(settings, store, router, EEWClient(settings))
     flask_app = create_app(settings, store)
 
     tasks = [
         asyncio.create_task(monitor.watch(region), name=f"watch-{region}")
         for region in settings.regions
     ]
+    if telegram_bot is not None:
+        tasks.append(asyncio.create_task(telegram_bot.poll(), name="telegram-poll"))
     if settings.develop_user_id:
         tasks.append(asyncio.create_task(monitor.send_startup_test(settings.develop_user_id)))
 
@@ -56,7 +68,9 @@ async def run(settings: Settings) -> None:
     finally:
         for task in tasks:
             task.cancel()
-        await notifier.close()
+        await line_notifier.close()
+        if telegram_bot is not None:
+            await telegram_bot.close()
 
 
 if __name__ == "__main__":
